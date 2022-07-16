@@ -10,9 +10,9 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdatePassword } from './dto/update-user.dto';
-import { User } from './model/user.model';
+import CreateUser from './dto/create-user.dto';
+import UpdatePassword from './dto/update-user.dto';
+import User from './model/user.model';
 import { UsersService } from './users.service';
 
 @Controller('user')
@@ -30,10 +30,9 @@ export class UsersController {
   }
 
   @Post()
-  create(
-    @Body() CreateUserDto: CreateUserDto,
-  ): Promise<Omit<User, 'password'>> {
-    return this.usersService.create(CreateUserDto);
+  @HttpCode(HttpStatus.CREATED)
+  create(@Body() newUser: CreateUser): Promise<Omit<User, 'password'>> {
+    return this.usersService.create(newUser);
   }
 
   @Delete(':id')
@@ -44,9 +43,9 @@ export class UsersController {
 
   @Put(':id')
   update(
-    @Body() updateProductDto: UpdatePassword,
+    @Body() updatePassword: UpdatePassword,
     @Param('id', new ParseUUIDPipe()) id: string,
   ): Promise<Omit<User, 'password'>> {
-    return this.usersService.update(id, updateProductDto);
+    return this.usersService.update(id, updatePassword);
   }
 }

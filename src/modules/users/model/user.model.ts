@@ -1,6 +1,6 @@
 import { Exclude } from 'class-transformer';
 
-export class User {
+class User {
   id: string;
   login: string;
   version: number;
@@ -14,3 +14,5 @@ export class User {
     Object.assign(this, partial);
   }
 }
+
+export default User;

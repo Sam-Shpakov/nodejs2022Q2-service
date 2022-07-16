@@ -4,9 +4,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdatePassword } from './dto/update-user.dto';
-import { User } from './model/user.model';
+import CreateUser from './dto/create-user.dto';
+import UpdatePassword from './dto/update-user.dto';
+import User from './model/user.model';
 
 @Injectable()
 export class UsersService {
@@ -22,11 +22,11 @@ export class UsersService {
     throw new NotFoundException();
   }
 
-  async create(userDto: CreateUserDto): Promise<Omit<User, 'password'>> {
+  async create(input: CreateUser): Promise<Omit<User, 'password'>> {
     const createTime = Date.now();
     const newUser = {
       id: uuidv4(),
-      ...userDto,
+      ...input,
       version: 1,
       createdAt: createTime,
       updatedAt: createTime,
