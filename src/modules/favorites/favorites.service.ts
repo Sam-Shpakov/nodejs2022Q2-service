@@ -4,9 +4,10 @@ import {
   Injectable,
   UnprocessableEntityException,
 } from '@nestjs/common';
+
 import { TracksService } from '../tracks/tracks.service';
 import { AlbumsService } from '../albums/albums.service';
-import { ArtistsService } from './../artists/artists.service';
+import { ArtistsService } from '../artists/artists.service';
 import Album from '../albums/model/album.model';
 import Artist from '../artists/model/artist.model';
 import Track from '../tracks/model/track.model';
