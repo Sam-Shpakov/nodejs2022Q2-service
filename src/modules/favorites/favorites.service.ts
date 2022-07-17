@@ -17,6 +17,7 @@ import { ArtistsService } from '../artists/artists.service';
 
 @Injectable()
 export class FavoritesService {
+  private favorites: FavoritesIds = { tracks: [], albums: [], artists: [] };
   constructor(
     @Inject(forwardRef(() => TracksService))
     private readonly tracksService: TracksService,
@@ -28,29 +29,27 @@ export class FavoritesService {
     private readonly artistsService: ArtistsService,
   ) {}
 
-  private favorites: FavoritesIds = { tracks: [], albums: [], artists: [] };
-
   async getAll(): Promise<FavoritesResponse> {
     const tracks: Track[] = await Promise.allSettled(
       this.favorites.tracks.map((trackId) =>
         this.tracksService.getById(trackId),
       ),
     ).then((res) =>
-      res.map((item) => (item as unknown as PromiseFulfilledResult<any>).value),
+      res.map((item) => (item as PromiseFulfilledResult<Track>).value),
     );
     const albums: Album[] = await Promise.allSettled(
       this.favorites.albums.map((albumId) =>
         this.albumsService.getById(albumId),
       ),
     ).then((res) =>
-      res.map((item) => (item as unknown as PromiseFulfilledResult<any>).value),
+      res.map((item) => (item as PromiseFulfilledResult<Album>).value),
     );
     const artists: Artist[] = await Promise.allSettled(
       this.favorites.artists.map((artistId) =>
         this.artistsService.getById(artistId),
       ),
     ).then((res) =>
-      res.map((item) => (item as unknown as PromiseFulfilledResult<any>).value),
+      res.map((item) => (item as PromiseFulfilledResult<Artist>).value),
     );
     return { artists, albums, tracks };
   }
