@@ -10,10 +10,10 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { AlbumsService } from './albums.service';
+import Album from './models/album.model';
 import CreateAlbum from './dto/create-album.dto';
 import UpdateAlbum from './dto/update-album.dto';
-import Album from './model/album.model';
+import { AlbumsService } from './albums.service';
 
 @Controller('album')
 export class AlbumsController {
@@ -30,21 +30,21 @@ export class AlbumsController {
   }
 
   @Post()
-  create(@Body() CreateAlbumDto: CreateAlbum): Promise<Album> {
-    return this.albumsService.create(CreateAlbumDto);
+  create(@Body() input: CreateAlbum): Promise<Album> {
+    return this.albumsService.create(input);
+  }
+
+  @Put(':id')
+  update(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() input: UpdateAlbum,
+  ): Promise<Album> {
+    return this.albumsService.update(id, input);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<Album> {
     return this.albumsService.remove(id);
-  }
-
-  @Put(':id')
-  update(
-    @Body() UpdateAlbumDto: UpdateAlbum,
-    @Param('id', new ParseUUIDPipe()) id: string,
-  ): Promise<Album> {
-    return this.albumsService.update(id, UpdateAlbumDto);
   }
 }

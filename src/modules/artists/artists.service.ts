@@ -6,13 +6,13 @@ import {
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
+import Artist from './models/artist.model';
+import CreateArtist from './dto/create-artist.dto';
+import UpdateArtist from './dto/update-artist.dto';
+
 import { AlbumsService } from '../albums/albums.service';
 import { FavoritesService } from '../favorites/favorites.service';
 import { TracksService } from '../tracks/tracks.service';
-
-import CreateArtist from './dto/create-artist.dto';
-import UpdateArtist from './dto/update-artist.dto';
-import Artist from './model/artist.model';
 
 @Injectable()
 export class ArtistsService {

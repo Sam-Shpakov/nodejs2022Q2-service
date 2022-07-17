@@ -1,5 +1,5 @@
-import Artist from '../../artists/model/artist.model';
-import Album from '../../albums/model/album.model';
+import Artist from '../../artists/models/artist.model';
+import Album from '../../albums/models/album.model';
 import Track from '../../tracks/model/track.model';
 
 export interface FavoritesResponse {

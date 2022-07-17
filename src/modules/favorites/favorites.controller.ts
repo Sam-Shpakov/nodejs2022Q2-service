@@ -20,17 +20,6 @@ export class FavoritesController {
     return this.favoritesService.getAll();
   }
 
-  @Post('track/:id')
-  addTrack(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return this.favoritesService.addTrack(id);
-  }
-
-  @Delete('track/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  removeTrack(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return this.favoritesService.removeTrack(id);
-  }
-
   @Post('album/:id')
   addAlbum(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.favoritesService.addAlbum(id);
@@ -51,5 +40,16 @@ export class FavoritesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   removeArtist(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.favoritesService.removeArtist(id);
+  }
+
+  @Post('track/:id')
+  addTrack(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return this.favoritesService.addTrack(id);
+  }
+
+  @Delete('track/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeTrack(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return this.favoritesService.removeTrack(id);
   }
 }

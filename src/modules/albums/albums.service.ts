@@ -9,7 +9,7 @@ import { TracksService } from '../tracks/tracks.service';
 import { v4 as uuidv4 } from 'uuid';
 import CreateAlbum from './dto/create-album.dto';
 import UpdateAlbum from './dto/update-album.dto';
-import Album from './model/album.model';
+import Album from './models/album.model';
 
 @Injectable()
 export class AlbumsService {
