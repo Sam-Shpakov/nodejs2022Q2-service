@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
+import { InMemoryDb } from '../../services';
 import Artist from './models/artist.model';
 import CreateArtist from './dto/create-artist.dto';
 import UpdateArtist from './dto/update-artist.dto';
@@ -17,6 +18,7 @@ import { TracksService } from '../tracks/tracks.service';
 @Injectable()
 export class ArtistsService {
   constructor(
+    private inMemoryDb: InMemoryDb<Artist>,
     @Inject(forwardRef(() => TracksService))
     private readonly tracksService: TracksService,
 
@@ -27,53 +29,44 @@ export class ArtistsService {
     private readonly favoritesService: FavoritesService,
   ) {}
 
-  private artists: Artist[] = [];
-
   async getAll(): Promise<Artist[]> {
-    return this.artists;
+    return this.inMemoryDb.getAll();
   }
 
   async getById(id: string): Promise<Artist> {
-    const artist = this.artists.find((artist) => id === artist.id);
-    if (artist) return artist;
+    const result = this.inMemoryDb.getById(id);
+    if (result) {
+      return result;
+    }
     throw new NotFoundException();
   }
 
-  async create(artistDto: CreateArtist): Promise<Artist> {
-    const newArtist = {
+  async create(input: CreateArtist): Promise<Artist> {
+    const result = {
       id: uuidv4(),
-      ...artistDto,
+      ...input,
     };
-    this.artists.push(newArtist);
-    return newArtist;
+    this.inMemoryDb.create(result);
+    return result;
+  }
+
+  async update(id: string, input: UpdateArtist): Promise<Artist> {
+    const result = this.inMemoryDb.update(id, input);
+    if (result) {
+      return result;
+    }
+    throw new NotFoundException();
   }
 
   async remove(id: string): Promise<Artist> {
-    const artist = this.artists.find((artist) => id === artist.id);
-    if (artist) {
+    const result = this.inMemoryDb.remove(id);
+    if (result) {
       await this.tracksService.removeArtist(id);
       await this.albumsService.removeArtist(id);
       await this.favoritesService.removeArtist(id);
-      this.artists = this.artists.filter((artist) => artist.id !== id);
-      return;
+      return result;
     }
-    throw new NotFoundException();
-  }
 
-  async update(id: string, artistDto: UpdateArtist): Promise<Artist> {
-    const artist = this.artists.find((artist) => id === artist.id);
-    if (artist) {
-      let updatedArtist: Artist | null = null;
-      this.artists = this.artists.map((artist) =>
-        artist.id === id
-          ? (updatedArtist = {
-              ...artist,
-              ...artistDto,
-            })
-          : artist,
-      );
-      return updatedArtist;
-    }
     throw new NotFoundException();
   }
 }
