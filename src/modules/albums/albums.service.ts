@@ -56,7 +56,7 @@ export class AlbumsService {
   async remove(id: string): Promise<Album> {
     const result = this.inMemoryDb.remove(id);
     if (result) {
-      await this.tracksService.removeAlbums(id);
+      await this.tracksService.removeAlbum(id);
       await this.favoritesService.removeAlbum(id);
       return result;
     }

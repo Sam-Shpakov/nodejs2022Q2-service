@@ -34,17 +34,17 @@ export class TracksController {
     return this.tracksService.create(CreateTrackDto);
   }
 
+  @Put(':id')
+  update(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() UpdateTrackDto: UpdateTrack,
+  ): Promise<Track> {
+    return this.tracksService.update(id, UpdateTrackDto);
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<Track> {
     return this.tracksService.remove(id);
-  }
-
-  @Put(':id')
-  update(
-    @Body() UpdateTrackDto: UpdateTrack,
-    @Param('id', new ParseUUIDPipe()) id: string,
-  ): Promise<Track> {
-    return this.tracksService.update(id, UpdateTrackDto);
   }
 }

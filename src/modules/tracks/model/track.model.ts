@@ -4,10 +4,6 @@ class Track {
   artistId: string | null;
   albumId: string | null;
   duration: number;
-
-  constructor(partial: Partial<Track>) {
-    Object.assign(this, partial);
-  }
 }
 
 export default Track;

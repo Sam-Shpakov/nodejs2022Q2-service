@@ -9,10 +9,6 @@ class User {
 
   @Exclude()
   password: string;
-
-  constructor(partial: Partial<User>) {
-    Object.assign(this, partial);
-  }
 }
 
 export default User;
