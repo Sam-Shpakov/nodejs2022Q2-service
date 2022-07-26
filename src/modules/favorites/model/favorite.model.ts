@@ -1,5 +1,5 @@
 import Artist from '../../artists/models/artist.model';
-import Album from '../../albums/models/album.model';
+import Album from '../../albums/entities/album.entity';
 import Track from '../../tracks/model/track.model';
 
 export class FavoritesResponse {

@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { InMemoryDb } from '../../services';
 import CreateAlbum from './dto/create-album.dto';
 import UpdateAlbum from './dto/update-album.dto';
-import Album from './models/album.model';
+import Album from './entities/album.entity';
 
 import { FavoritesService } from '../favorites/favorites.service';
 import { TracksService } from '../tracks/tracks.service';

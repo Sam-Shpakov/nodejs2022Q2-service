@@ -10,7 +10,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import Album from './models/album.model';
+import Album from './entities/album.entity';
 import CreateAlbum from './dto/create-album.dto';
 import UpdateAlbum from './dto/update-album.dto';
 import { AlbumsService } from './albums.service';

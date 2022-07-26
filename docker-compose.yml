@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     build: .
-    image: antoniosk10/homeservice
+    image: samshpakov/restservice
     depends_on:
       - postgres
     ports:
@@ -16,7 +16,7 @@ services:
       - my_network
 
   postgres:
-    build: ./db
+    build: ./database
     image: postgres
     restart: always
     ports:

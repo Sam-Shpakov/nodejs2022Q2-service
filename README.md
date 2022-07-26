@@ -2,22 +2,31 @@
 
 ## Prerequisites
 
+- NodeJS - [Install NodeJS](https://nodejs.org/en/)
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Docker - [Install Docker](https://docs.docker.com/engine/install/)
 
-## Downloading
+## Steps for running
+
+### Downloading
 
 ```
 git clone {repository URL}
 ```
 
-## Installing NPM modules
+### Switch to branch `service-part-3`
 
 ```
-npm install
+git checkout service-part-3
 ```
 
-## Running application
+### Installing NPM modules
+
+```
+npm i
+```
+
+### Running application in docker
 
 ```
 docker-compose up --build

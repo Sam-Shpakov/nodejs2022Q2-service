@@ -5,7 +5,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 
-import Album from '../albums/models/album.model';
+import Album from '../albums/entities/album.entity';
 import Artist from '../artists/models/artist.model';
 import Track from '../tracks/model/track.model';
 
