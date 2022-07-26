@@ -10,27 +10,27 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import Album from './entities/album.entity';
+
 import CreateAlbum from './dto/create-album.dto';
 import UpdateAlbum from './dto/update-album.dto';
 import { AlbumsService } from './albums.service';
-
+import AlbumEntity from './entities/album.entity';
 @Controller('album')
 export class AlbumsController {
   constructor(private readonly albumsService: AlbumsService) {}
 
   @Get()
-  getAll(): Promise<Album[]> {
+  getAll(): Promise<AlbumEntity[]> {
     return this.albumsService.getAll();
   }
 
   @Get(':id')
-  getOne(@Param('id', new ParseUUIDPipe()) id: string): Promise<Album> {
+  getOne(@Param('id', new ParseUUIDPipe()) id: string): Promise<AlbumEntity> {
     return this.albumsService.getById(id);
   }
 
   @Post()
-  create(@Body() input: CreateAlbum): Promise<Album> {
+  create(@Body() input: CreateAlbum): Promise<AlbumEntity> {
     return this.albumsService.create(input);
   }
 
@@ -38,13 +38,13 @@ export class AlbumsController {
   update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() input: UpdateAlbum,
-  ): Promise<Album> {
+  ): Promise<AlbumEntity> {
     return this.albumsService.update(id, input);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<Album> {
+  remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.albumsService.remove(id);
   }
 }

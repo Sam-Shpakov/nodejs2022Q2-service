@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('album')
-class AlbumEntity {
+@Entity('artist')
+class ArtistEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -9,9 +9,7 @@ class AlbumEntity {
   name: string;
 
   @Column()
-  year: number;
-
-  @Column()
-  artistId: string | null;
+  grammy: boolean;
 }
-export default AlbumEntity;
+
+export default ArtistEntity;

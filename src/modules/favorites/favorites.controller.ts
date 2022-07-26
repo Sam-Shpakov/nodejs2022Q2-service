@@ -9,14 +9,14 @@ import {
   Post,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { FavoritesResponse } from './model/favorite.model';
+import { FavoriteEntityResult } from './entities/favorite.entity';
 
 @Controller('favs')
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
   @Get()
-  getAll(): Promise<FavoritesResponse> {
+  getAll(): Promise<FavoriteEntityResult> {
     return this.favoritesService.getAll();
   }
 
