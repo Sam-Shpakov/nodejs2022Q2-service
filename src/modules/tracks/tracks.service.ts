@@ -18,6 +18,7 @@ export class TracksService {
   constructor(
     @InjectRepository(TrackEntity)
     private trackRepository: Repository<TrackEntity>,
+
     @Inject(forwardRef(() => FavoritesService))
     private readonly favoritesService: FavoritesService,
   ) {}
@@ -53,10 +54,10 @@ export class TracksService {
 
   async remove(id: string): Promise<void> {
     const result = await this.trackRepository.delete(id);
-    if (result) {
-      await this.favoritesService.removeTrack(id);
+    if (result.affected === 0) {
+      throw new NotFoundException();
     }
-    throw new NotFoundException();
+    await this.favoritesService.removeTrack(id);
   }
 
   async removeArtist(id: string): Promise<void> {

@@ -44,11 +44,9 @@ export class ArtistsService {
   }
 
   async create(input: CreateArtist): Promise<ArtistEntity> {
-    const artist = this.artistRepository.create(input);
-    return await this.artistRepository.save(artist);
-    // return await this.artistRepository.save(
-    //   this.artistRepository.create(input),
-    // );
+    return await this.artistRepository.save(
+      this.artistRepository.create(input),
+    );
   }
 
   async update(id: string, input: UpdateArtist): Promise<ArtistEntity> {
@@ -66,12 +64,11 @@ export class ArtistsService {
 
   async remove(id: string): Promise<void> {
     const result = await this.artistRepository.delete(id);
-    if (result) {
-      await this.tracksService.removeArtist(id);
-      await this.albumsService.removeArtist(id);
-      await this.favoritesService.removeArtist(id);
+    if (result.affected === 0) {
+      throw new NotFoundException();
     }
-
-    throw new NotFoundException();
+    await this.tracksService.removeArtist(id);
+    await this.albumsService.removeArtist(id);
+    await this.favoritesService.removeArtist(id);
   }
 }
