@@ -41,8 +41,8 @@ export class AuthService {
     const user = await this.usersService.getByLogin(input.login);
 
     if (!user) throw new ForbiddenException('Access Denied');
-
-    const isCompare = await compare(user.password, input.password);
+    const rest = await this.hash(input.password);
+    const isCompare = await compare(input.password, rest);
     if (!isCompare) {
       throw new ForbiddenException('password is wrong');
     }
@@ -56,13 +56,13 @@ export class AuthService {
   async refreshTokens(userId: string, rt: string): Promise<Tokens> {
     const user = await this.usersService.getById(userId);
 
-    if (!user || !user.password) {
+    if (!user || !user.hashRt) {
       throw new ForbiddenException('Access Denied');
     }
 
-    const isCompare = await compare(user.password, rt);
+    const isCompare = await compare(rt, user.hashRt);
     if (!isCompare) {
-      throw new ForbiddenException('password is wrong');
+      throw new ForbiddenException('refreshToken is wrong');
     }
 
     const tokens = await this.getTokens(user.id, user.login);
