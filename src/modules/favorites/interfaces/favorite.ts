@@ -1,6 +1,6 @@
-import Artist from '../../artists/models/artist.model';
-import Album from '../../albums/models/album.model';
-import Track from '../../tracks/model/track.model';
+import Artist from '../../artists/entities/artist.entity';
+import Album from '../../albums/entities/album.entity';
+import Track from '../../tracks/entities/track.entity';
 
 export class FavoritesResponse {
   artists: Artist[];

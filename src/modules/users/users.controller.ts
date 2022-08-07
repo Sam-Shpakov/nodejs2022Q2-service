@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import CreateUser from './dto/create-user.dto';
 import UpdatePassword from './dto/update-user.dto';
-import User from './models/user.model';
+import UserEntity from './entities/user.entity';
 import { UsersService } from './users.service';
 
 @Controller('user')
@@ -20,32 +20,34 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  getAll(): Promise<User[]> {
+  getAll(): Promise<UserEntity[]> {
     return this.usersService.getAll();
   }
 
   @Get(':id')
-  getOne(@Param('id', new ParseUUIDPipe()) id: string): Promise<User> {
+  getOne(@Param('id', new ParseUUIDPipe()) id: string): Promise<UserEntity> {
     return this.usersService.getById(id);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() newUser: CreateUser): Promise<Omit<User, 'password'>> {
+  create(
+    @Body() newUser: CreateUser,
+  ): Promise<Omit<UserEntity, 'password' | 'toResponse'>> {
     return this.usersService.create(newUser);
-  }
-
-  @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<User> {
-    return this.usersService.remove(id);
   }
 
   @Put(':id')
   update(
     @Body() updatePassword: UpdatePassword,
     @Param('id', new ParseUUIDPipe()) id: string,
-  ): Promise<Omit<User, 'password'>> {
+  ): Promise<Omit<UserEntity, 'password'>> {
     return this.usersService.update(id, updatePassword);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return this.usersService.remove(id);
   }
 }

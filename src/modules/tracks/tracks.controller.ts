@@ -10,9 +10,10 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+
 import CreateTrack from './dto/create-track.dto';
 import UpdateTrack from './dto/update-track.dto';
-import Track from './model/track.model';
+import TrackEntity from './entities/track.entity';
 import { TracksService } from './tracks.service';
 
 @Controller('track')
@@ -20,17 +21,17 @@ export class TracksController {
   constructor(private readonly tracksService: TracksService) {}
 
   @Get()
-  getAll(): Promise<Track[]> {
+  getAll(): Promise<TrackEntity[]> {
     return this.tracksService.getAll();
   }
 
   @Get(':id')
-  getOne(@Param('id', new ParseUUIDPipe()) id: string): Promise<Track> {
+  getOne(@Param('id', new ParseUUIDPipe()) id: string): Promise<TrackEntity> {
     return this.tracksService.getById(id);
   }
 
   @Post()
-  create(@Body() CreateTrackDto: CreateTrack): Promise<Track> {
+  create(@Body() CreateTrackDto: CreateTrack): Promise<TrackEntity> {
     return this.tracksService.create(CreateTrackDto);
   }
 
@@ -38,13 +39,13 @@ export class TracksController {
   update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() UpdateTrackDto: UpdateTrack,
-  ): Promise<Track> {
+  ): Promise<TrackEntity> {
     return this.tracksService.update(id, UpdateTrackDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<Track> {
+  remove(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.tracksService.remove(id);
   }
 }

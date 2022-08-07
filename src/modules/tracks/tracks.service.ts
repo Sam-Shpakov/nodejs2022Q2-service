@@ -4,82 +4,75 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { InMemoryDb } from '../../services';
+import TrackEntity from './entities/track.entity';
 import CreateTrack from './dto/create-track.dto';
 import UpdateTrack from './dto/update-track.dto';
-import Track from './model/track.model';
 
 import { FavoritesService } from '../favorites/favorites.service';
 
 @Injectable()
 export class TracksService {
   constructor(
-    private inMemoryDb: InMemoryDb<Track>,
+    @InjectRepository(TrackEntity)
+    private trackRepository: Repository<TrackEntity>,
+
     @Inject(forwardRef(() => FavoritesService))
     private readonly favoritesService: FavoritesService,
   ) {}
 
-  async getAll(): Promise<Track[]> {
-    return this.inMemoryDb.getAll();
+  async getAll(): Promise<TrackEntity[]> {
+    return await this.trackRepository.find();
   }
 
-  async getById(id: string): Promise<Track> {
-    const result = this.inMemoryDb.getById(id);
+  async getById(id: string): Promise<TrackEntity> {
+    const result = await this.trackRepository.findOne({ where: { id } });
     if (result) {
       return result;
     }
     throw new NotFoundException();
   }
 
-  async create(input: CreateTrack): Promise<Track> {
-    const result = {
-      id: uuidv4(),
-      ...input,
-    };
-    this.inMemoryDb.create(result);
-    return result;
+  async create(input: CreateTrack): Promise<TrackEntity> {
+    return await this.trackRepository.save(this.trackRepository.create(input));
   }
 
-  async update(id: string, input: UpdateTrack): Promise<Track> {
-    const result = this.inMemoryDb.update(id, input);
+  async update(id: string, input: UpdateTrack): Promise<TrackEntity> {
+    const result = await this.trackRepository.findOne({ where: { id } });
     if (result) {
-      return result;
+      return await this.trackRepository.save(
+        this.trackRepository.create({
+          ...result,
+          ...input,
+        }),
+      );
     }
     throw new NotFoundException();
   }
 
-  async remove(id: string): Promise<Track> {
-    const result = this.inMemoryDb.remove(id);
-    if (result) {
-      await this.favoritesService.removeTrack(id);
-      return result;
+  async remove(id: string): Promise<void> {
+    const result = await this.trackRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException();
     }
-    throw new NotFoundException();
+    await this.favoritesService.removeTrack(id);
   }
 
   async removeArtist(id: string): Promise<void> {
-    const all = this.inMemoryDb
-      .getAll()
-      .filter((item) => item.artistId === id)
-      .map((item) => ({ ...item, artistId: null }));
-    const result = [];
-
-    all.forEach((item) => {
-      result.push(this.update(item.id, item));
-    });
+    const result = await this.getAll();
+    for (const track of result) {
+      if (track.artistId === id)
+        await this.update(track.id, { ...track, artistId: null });
+    }
   }
 
   async removeAlbum(id: string): Promise<void> {
-    const all = this.inMemoryDb
-      .getAll()
-      .filter((item) => item.albumId === id)
-      .map((item) => ({ ...item, albumId: null }));
-    const result = [];
-
-    all.forEach((item) => {
-      result.push(this.update(item.id, item));
-    });
+    const result = await this.getAll();
+    for (const track of result) {
+      if (track.albumId === id)
+        await this.update(track.id, { ...track, albumId: null });
+    }
   }
 }
