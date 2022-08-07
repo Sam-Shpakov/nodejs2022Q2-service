@@ -17,7 +17,7 @@ git clone {repository URL}
 ### Switch to branch `service-part-3`
 
 ```
-git checkout service-part-3
+git checkout auth
 ```
 
 ### Installing NPM modules
@@ -29,7 +29,7 @@ npm i
 ### Running application in docker
 
 ```
-docker-compose up --build
+npm run docker
 ```
 
 After starting the app on port (4000 as default) you can open

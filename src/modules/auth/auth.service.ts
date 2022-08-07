@@ -5,8 +5,9 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as argon from 'argon2';
-import { UsersService } from 'src/users/users.service';
+import { ConfigService } from '@nestjs/config';
+import { hash, compare } from 'bcrypt';
+import { UsersService } from '../users/users.service';
 import { AuthDto } from './dto';
 import { JwtPayload, Tokens } from './types';
 
@@ -16,31 +17,38 @@ export class AuthService {
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
-  async signupLocal(dto: AuthDto): Promise<Tokens> {
-    const hash = await argon.hash(dto.password);
+  private hash(data: string) {
+    return hash(data, +this.configService.get('CRYPT_SALT'));
+  }
+
+  async signup(input: AuthDto): Promise<Tokens> {
+    const hash = await this.hash(input.password);
     const newUser = await this.usersService.create({
-      login: dto.login,
+      login: input.login,
       password: hash,
     });
 
     const tokens = await this.getTokens(newUser.id, newUser.login);
-    await this.updateRtHash(newUser.id, tokens.refresh_token);
+    await this.updateRtHash(newUser.id, tokens.refreshToken);
 
     return tokens;
   }
 
-  async signinLocal(dto: AuthDto): Promise<Tokens> {
-    const user = await this.usersService.getByUsername(dto.login);
+  async signin(input: AuthDto): Promise<Tokens> {
+    const user = await this.usersService.getByLogin(input.login);
 
     if (!user) throw new ForbiddenException('Access Denied');
 
-    const passwordMatches = await argon.verify(user.password, dto.password);
-    if (!passwordMatches) throw new ForbiddenException('Access Denied');
+    const isCompare = await compare(user.password, input.password);
+    if (!isCompare) {
+      throw new ForbiddenException('password is wrong');
+    }
 
     const tokens = await this.getTokens(user.id, user.login);
-    await this.updateRtHash(user.id, tokens.refresh_token);
+    await this.updateRtHash(user.id, tokens.refreshToken);
 
     return tokens;
   }
@@ -48,20 +56,24 @@ export class AuthService {
   async refreshTokens(userId: string, rt: string): Promise<Tokens> {
     const user = await this.usersService.getById(userId);
 
-    if (!user || !user.hashRt) throw new ForbiddenException('Access Denied');
+    if (!user || !user.password) {
+      throw new ForbiddenException('Access Denied');
+    }
 
-    const rtMatches = await argon.verify(user.hashRt, rt);
-    if (!rtMatches) throw new ForbiddenException('Access Denied');
+    const isCompare = await compare(user.password, rt);
+    if (!isCompare) {
+      throw new ForbiddenException('password is wrong');
+    }
 
     const tokens = await this.getTokens(user.id, user.login);
-    await this.updateRtHash(user.id, tokens.refresh_token);
+    await this.updateRtHash(user.id, tokens.refreshToken);
 
     return tokens;
   }
 
   async updateRtHash(userId: string, rt: string): Promise<void> {
-    const hash = await argon.hash(rt);
-    await this.usersService.updateHashRt(userId, hash);
+    const hashRt = await this.hash(rt);
+    await this.usersService.updateHashRt(userId, hashRt);
   }
 
   async getTokens(userId: string, email: string): Promise<Tokens> {
@@ -70,7 +82,7 @@ export class AuthService {
       email: email,
     };
 
-    const [at, rt] = await Promise.all([
+    const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: process.env.JWT_SECRET_KEY,
         expiresIn: process.env.TOKEN_EXPIRE_TIME,
@@ -82,8 +94,8 @@ export class AuthService {
     ]);
 
     return {
-      accessToken: at,
-      refresh_token: rt,
+      accessToken,
+      refreshToken,
     };
   }
 }

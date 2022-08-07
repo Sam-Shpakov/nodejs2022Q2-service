@@ -38,6 +38,16 @@ export class UsersService {
     throw new NotFoundException();
   }
 
+  async getByLogin(login: string): Promise<UserEntity> {
+    const result = await this.userRepository.findOne({
+      where: { login },
+    });
+    if (result) {
+      return result;
+    }
+    throw new NotFoundException();
+  }
+
   async create(
     input: CreateUser,
   ): Promise<Omit<UserEntity, 'password' | 'toResponse'>> {
@@ -76,6 +86,17 @@ export class UsersService {
       );
     }
     throw new NotFoundException();
+  }
+
+  async updateHashRt(id: string, hashRt: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    await this.userRepository.save(
+      this.userRepository.create({
+        ...user,
+        hashRt,
+      }),
+    );
+    return;
   }
 
   async remove(id: string): Promise<void> {
